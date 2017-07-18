@@ -1,3 +1,10 @@
 1:- Sqoop Does nto use rdeucer while ingesting the data 
 2:- split by clause or m 1 ( serial ) extraction required if we don't have primary key or indexed cloumn in table 
 3:- Sqoop merge can be used to merge the delat in increment scenarios where we nee tp merge the data based on key if exist then update else insert 
+
+
+
+
+Sqoop Merge :-
+sqoop merge   --class-name  dpet_1 --merge-key  department_id  --new-data /user/cloudera/merge_data/dept_delta --onto  /user/cloudera/merge_data/dept_org --jar-file   /tmp/sqoop-pravenk
+cse08/compile/a90d5e5c562aea9940306e7c9617053c/dpet_1.jar --target-dir /user/cloudera/merge_data/dept_merge_1
