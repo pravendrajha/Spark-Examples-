@@ -1,0 +1,3 @@
+1:- Sqoop Does nto use rdeucer while ingesting the data 
+2:- split by clause or m 1 ( serial ) extraction required if we don't have primary key or indexed cloumn in table 
+3:- Sqoop merge can be used to merge the delat in increment scenarios where we nee tp merge the data based on key if exist then update else insert 
