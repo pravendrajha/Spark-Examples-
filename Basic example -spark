@@ -17,3 +17,10 @@ rddtext.saveAsTextFile( "/user/cloudera/sqoop_export/orders_sample")
 
 ---Spark Submit on 
 spark-submit --master yarn --class Simple_App --deploy-mode cluster /home/cloudera/scala_dev/target/scala-2.10/simple-project_2.10-1.0.jar
+
+
+--removethe empty lien from file 
+
+val file = Source.fromFile(args(0)).getLines().filter(!_.isEmpty()).mkString(" ")
+
+
