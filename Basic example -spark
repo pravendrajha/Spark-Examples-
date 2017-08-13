@@ -24,3 +24,6 @@ spark-submit --master yarn --class Simple_App --deploy-mode cluster /home/cloude
 val file = Source.fromFile(args(0)).getLines().filter(!_.isEmpty()).mkString(" ")
 
 
+--reduce vs foldbykey -- reduce is faster that fold 
+
+
