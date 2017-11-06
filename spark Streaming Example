@@ -1,0 +1,63 @@
+import kafka.serializer.StringDecoder
+import org.apache.spark.streaming._
+//import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.spark.streaming.kafka._
+import org.apache.spark.SparkConf
+import org.apache.spark.streaming.dstream.InputDStream
+import com.typesafe.config._
+
+object StreamData {
+
+
+  def main(args: Array[String]) {
+
+   val config = ConfigFactory.load()
+
+
+val v_topic =  config.getString("topic")
+    val v_brokers = config.getString("brokers")
+    val topicsSet = v_topic.split(",").toSet
+    val kafkaParams =
+    Map[String, String]("metadata.broker.list" -> v_brokers  ,
+  "group.id" -> "use_a_separate_group_id_for_each_stream",
+  "auto.offset.reset" -> "smallest",
+  "enable.auto.commit" ->"false"
+)
+val checkpointDir = config.getString("checkpointDir")
+
+
+val ssc = StreamingContext.getOrCreate(     checkpointDir,
+ setupSsc(topicsSet,kafkaParams,checkpointDir)_
+
+)
+
+    ssc.start()
+    ssc.awaitTermination()
+  }
+
+  def setupSsc(
+topicsSet: Set[String],
+     kafkaParams: Map[String, String],
+     checkpointDir: String
+   )()
+: StreamingContext = {
+val ssc = new StreamingContext(new SparkConf, Seconds(60))
+
+val messages: InputDStream[(String, String)] = KafkaUtils.
+createDirectStream[String, String, StringDecoder, StringDecoder](
+      ssc, kafkaParams, topicsSet)
+
+    val lines  = messages.map(_._2)
+    val linesFiltered = lines.filter(rec => rec.contains("GET /department/"))
+    val countByDepartment = linesFiltered.
+      map(rec => (rec.split(" ")(6).split("/")(2), 1)).
+      reduceByKey(_ + _)
+    //        reduceByKeyAndWindow((a:Int, b:Int) => (a + b), Seconds(300), Seconds(60))
+    //    countByDepartment.saveAsTextFiles(args(0))
+    // Below function call will save the data into HDFS
+    countByDepartment.saveAsTextFiles("hdfs:///user/hdpdev86/data_streaming_chp/data_2")
+ssc.checkpoint(checkpointDir)
+ssc
+}
+
+}
