@@ -1,0 +1,17 @@
+val spark = SparkSession
+  .builder()
+  .master("local")
+  .appName("ReadDataFromCsv")
+  .getOrCreate()
+
+val df = spark.read.csv("./src/main/resources/testData.csv")
+  //To display dataframe data
+  df.createOrReplaceTempView("people")
+
+sqlContext.setConf("spark.sql.parquet.compression.codec","gzip");
+sqlContext.sql("insert into table mytable select * from temptable")
+
+
+
+
+
