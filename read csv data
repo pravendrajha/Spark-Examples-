@@ -13,6 +13,24 @@ spark.conf.set("spark.sql.parquet.compression.codec","gzip")
 
 spark.conf.set("spark.sql.shuffle.partitions", 6)
 
+
+val fs = FileSystem.get(sc.hadoopConfiguration)
+    val inputPathExists = fs.exists(new Path(inputPath))
+    val outputPathExists = fs.exists(new Path(outputPath))
+
+    if (!inputPathExists) {
+      println("Input Path does not exists")
+      return
+    }
+
+   
+   
+   val conf = sc.hadoopConfiguration
+val fs = org.apache.hadoop.fs.FileSystem.get(conf)
+fs.rename(new org.apache.hadoop.fs.Path("/path/on/hdfs/file.txt"), new
+org.apache.hadoop.fs.Path("/path/on/hdfs/other/file.txt"))
+
+
 sql("select * from people").show()
 
 
