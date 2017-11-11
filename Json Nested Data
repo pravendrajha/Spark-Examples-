@@ -1,0 +1,20 @@
+
+import org.apache.spark.sql.types.StructType
+
+import org.apache.spark.sql.types.{IntegerType, StringType}
+
+val schema = (new StructType)
+  .add("name", StringType)
+  .add("age", IntegerType)
+    .add("cars", (new StructType)
+      .add("car1", StringType)
+      .add("car2", StringType)
+      .add("car3", StringType)
+    )
+  )
+
+ val rdd =sqlContext.read.schema(schema).json("file:///home/hdpdev86/data.json")
+
+rdd.printSchema
+
+//once Josn formate is incorrect data would be read in  string format
