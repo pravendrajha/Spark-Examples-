@@ -1,0 +1,5 @@
+100 partitions max in hive for best perfomance 
+3200 max bucket in hive table 
+spark & hive has differnt way of bucketing 
+spark bukceting can have more than 1 file per bucket where as hive will have only 1 file 
+spark use murmur hash fucntion and hive use has function 
