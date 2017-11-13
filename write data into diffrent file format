@@ -1,0 +1,6 @@
+spark.write.parquet("/user/hdpdev86/data/parquet_1");
+spark.write.avro("/user/hdpdev86/data/parquet_1");
+SPARK.conf.SET("spark.sql.parquet.compression.codec","snappy");
+toJSON.saveAsTextFile("/user/HDPDEV86/DATA_JSON");
+
+
