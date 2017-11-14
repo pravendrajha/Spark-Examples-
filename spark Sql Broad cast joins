@@ -1,0 +1,11 @@
+
+
+
+spark.conf.get("spark.sql.autoBroadcastJoinThreshold").toInt
+
+println(q.queryExecution.logical.numberedTreeString)
+println(q.queryExecution.sparkPlan.numberedTreeString)
+
+spark.conf.set("spark.sql.autoBroadcastJoinThreshold")
+
+
