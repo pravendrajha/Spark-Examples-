@@ -4,8 +4,8 @@ val spark = SparkSession
   .appName("ReadDataFromCsv")
   .getOrCreate()
 
-val df = spark.read.option("header","true").
-csv("/user/hdpdev86/data.csv")
+val df = spark.read.option("header","true").option("inferSchema", "true").option("delimiter",",").option("escape", "\"").csv("/user/hdpdev86/data.csv")
+
   //To display dataframe data
   df.createOrReplaceTempView("people")
 
