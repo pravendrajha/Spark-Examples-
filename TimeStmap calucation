@@ -1,3 +1,22 @@
 
 
  create table run_details (  unix_timestamps  bigint ) row format delimited fields terminated by ',' stored as textfile;
+ 
+ 
+ 
+
+
+
+import org.apache.spark.sql.hive.orc._
+import org.apache.spark.sql._
+
+val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
+
+val df = sqlContext.range(1).select(unix_timestamp as "current_timestamp").show
+
+dfCuurentTimeStamp.registerTempTable("current_time_stamp_temp")
+
+val dfInserTimeStamp = sqlContext.sql( "insert overwrite table hdpdev_86.run_details  select  current_timestamp from current_time_stamp_temp")
+
+val dfGetTimeStamps = hiveContext.table("hdpdev_86.run_details")
+
