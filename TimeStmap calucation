@@ -1,0 +1,3 @@
+
+
+ create table run_details (  unix_timestamps  bigint ) row format delimited fields terminated by ',' stored as textfile;
