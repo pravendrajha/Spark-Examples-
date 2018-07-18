@@ -1,0 +1,23 @@
+package main.scala
+
+import org.apache.spark.sql.SparkSession
+
+object SimpleApp {
+
+  def main(args: Array[String]): Unit = {
+
+    val spark = SparkSession.builder.appName("jdbc").master("local").getOrCreate()
+
+    import spark.implicits._
+
+    val query = "(select * from dual ) emp"
+
+    val empDF = spark.read.format("jdbc").option("url", "jdbc:oracle:thin:apps/apps@//hostname:1541/sid").option("dbtable", query).option("user", "apps").option("password", "P0t3ntial").option("driver", "oracle.jdbc.driver.OracleDriver").load()
+
+    empDF.printSchema()
+
+    empDF.show()
+
+  }
+
+}
