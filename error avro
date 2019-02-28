@@ -1,0 +1,7 @@
+Exception in thread "main" com.databricks.spark.avro.SchemaConverters$IncompatibleSchemaException: Unexpected type NullType.
+	at com.databricks.spark.avro.SchemaConverters$.com$databricks$spark$avro$SchemaConverters$$convertFieldTypeToAvro(SchemaConverters.scala:391)
+	at com.databricks.spark.avro.SchemaConverters$$anonfun$convertStructToAvro$1.apply(SchemaConverters.scala:122)
+  
+  
+  
+  reason :- attribute is type of null 
