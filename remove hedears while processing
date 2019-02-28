@@ -1,0 +1,3 @@
+val rddhdear = rdd.first()
+
+val rdddata = rdd.filter(row => row != rddhdear).filter(rows => !rows.contains("?"))
