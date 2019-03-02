@@ -1,0 +1,139 @@
+import org.apache.spark.sql.SQLContext
+import org.apache.spark._
+import org.apache.spark.sql.types._
+import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
+import java.util.Properties
+import com.mongodb.spark.MongoSpark
+import com.mongodb.spark.config.{ ReadConfig, WriteConfig }
+import org.apache.spark.sql.SQLContext
+import org.apache.spark.{ SparkConf, SparkContext }
+import org.apache.spark.sql.expressions._
+import org.apache.spark.sql.{Row, Column, DataFrame}
+import org.apache.spark.rdd.RDD
+
+
+object sparkSQL1 {
+
+  def main(args: Array[String]) {
+
+    val spark = SparkSession
+      .builder().master("local")
+      .appName("SparkSessionZipsExample")
+      .enableHiveSupport()
+      .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/audit_trail.JobDetailsHistory?readPreference=primaryPreferred")
+      .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/audit_trail.spark_data-mongo")
+      .config("spark.executor.cores", "4")
+      .config("spark.executor.memory", "2g")
+      .getOrCreate()
+
+
+
+
+val schema = new StructType().add("a","int").add("b","double")
+
+import spark.implicits._
+
+val df =spark.read.option("mode", "PERMISSIVE").option("columnNameOfCorruptRecord", "_corrupt_record").json("file:///C:/Users/pravjha/Desktop/hadoop_poc/datat/test1.json")
+
+
+
+
+
+/*
+
+import spark.implicits._
+
+
+val data = spark.read.option("header", "true").csv("file:///C:/Users/pravjha/Desktop/hadoop_poc/datat/dibetaic.csv").cache()
+
+data.take(15).foreach(println)
+
+
+data.select("num_lab_procedures", "num_procedures", "num_medications", "number_diagnoses").describe().show()
+
+data.select($"weight").groupBy($"weight").count().select($"weight", (($"count" / data.count())*100).alias("percent_recs")).where("weight = '?'").show()
+
+data.select($"weight").groupBy($"weight").count().select($"weight", (($"count" / data.count())*100).alias("percent_recs")).where("weight = '?'").show()
+data.select($"payer_code").groupBy($"payer_code").count().select($"payer_code", (($"count" / data.count())*100).alias("percent_recs")).where("payer_code = '?'").show()
+data.select($"medical_specialty").groupBy($"medical_specialty").count().select($"medical_specialty", (($"count" / data.count())*100).alias("percent_recs")).where("medical_specialty = '?'").show()
+
+val datadrp  = data.drop("weight", "payer_code")
+
+datadrp.select($"patient_nbr").groupBy($"patient_nbr").count().where("count > 1").show(5)
+
+
+val w =  Window.partitionBy($"patient_nbr").orderBy($"encounter_id".desc)
+
+val windowfn  = datadrp.withColumn("rownumber", row_number.over(w)).where($"rownumber"===1).drop("rownumber")
+
+windowfn.show()
+
+
+val data_dib = windowfn.filter($"discharge_disposition_id" =!="11")
+
+
+val admTypeId = StructField("admTypeId", DataTypes.IntegerType)
+val admType = StructField("admType",    DataTypes.StringType)
+val fields = Array(admTypeId, admType)
+val schema_type = StructType(fields)
+
+
+val data_type = spark.read.option("header", "true").schema(schema_type).csv("file:///C:/Users/pravjha/Desktop/hadoop_poc/datat/add_type.txt").cache()
+
+data_type.show()
+
+
+
+val admSrcId = StructField("admSrcId", DataTypes.IntegerType)
+val admSrc = StructField("admSrc",    DataTypes.StringType)
+val fields_src = Array(admSrcId, admSrc)
+
+val schema_src = StructType(fields_src)
+
+
+val data_source = spark.read.option("header", "true").schema(schema_src).csv("file:///C:/Users/pravjha/Desktop/hadoop_poc/datat/admisstion_type.txt").cache()
+
+data_source.show()
+
+val dchrgDispId = StructField("dchrgDispId", DataTypes.IntegerType)
+val dchrgDisp = StructField("dchrgDisp",    DataTypes.StringType)
+val fields_dis = Array(dchrgDispId, dchrgDisp)
+val schema_dis = StructType(fields_dis)
+
+val data_dis = spark.read.option("header", "true").schema(schema_dis).csv("file:///C:/Users/pravjha/Desktop/hadoop_poc/datat/discharge.txt").cache()
+
+data_dis.show()
+
+val join_deb_dis = data_dib.join(data_dis, data_dib("discharge_disposition_id") === data_dis("dchrgDispId")).withColumnRenamed("description", "discharge_disposition").drop(data_dis("dchrgDispId"))
+val join_deb_des_type = join_deb_dis.join(data_type, data_dib("admission_type_id") === data_type("admTypeId")).withColumnRenamed("description", "admission_type").drop(data_type("admTypeId"))
+val final_join = join_deb_des_type.join(data_source, data_dib("admission_source_id") === data_source("admSrcId")).withColumnRenamed("description", "admission_source").drop(data_source("admSrcId"))
+
+final_join.show()
+
+
+val diaDataDrpColsDF = final_join.drop("encounter_id", "patient_nbr", "diag_2", "diag_3", "max_glu_serum", "metformin", "repaglinide", "nateglinide", "chlorpropamide", "glimepiride", "acetohexamide", "glipizide", "glyburide", "tolbutamide", "pioglitazone", "rosiglitazone", "acarbose", "miglitol", "troglitazone", "tolazamide", "examide", "citoglipton", "insulin", "glyburide-metformin", "glipizide-metformin", "glimepiride-pioglitazone", "metformin-rosiglitazone", "metformin-pioglitazone")
+
+def udfA1Grp() =udf[Double, String ] { a => val x = a match {case "None" =>1.0 ;case ">8" =>2.0 ; case ">7" => 3.0 ;case "Norm" =>4.0} ;x }
+
+
+def udfReAdmBins() = udf[String, String] { a => val x = a match { case "<30" => "Readmitted"; case "NO" => "Not Readmitted"; case ">30" => "Not Readmitted";}; x;}
+
+val diaDataReadmtdDF = final_join.withColumn("A1CResGrp", udfA1Grp()($"A1Cresult")).withColumn("Readmitted", udfReAdmBins()($"readmitted"))
+
+println( "diaDataReadmtdDF") 
+
+diaDataReadmtdDF.show()
+
+
+println( "pivot example") 
+
+diaDataReadmtdDF.groupBy("race").pivot("Readmitted").agg(count("Readmitted")).show()
+
+println( "pivot example group by A1CResGrp") 
+
+diaDataReadmtdDF.groupBy("A1CResGrp").pivot("Readmitted").agg(count("Readmitted")).orderBy("A1CResGrp").show()
+
+diaDataReadmtdDF.groupBy("A1CResGrp").pivot("gender").agg(count("Readmitted")).show()*/
+}
+}
