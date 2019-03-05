@@ -1,1 +1,3 @@
 https://github.com/ansrivas/spark-structured-streaming/blob/avro-example/src/main/scala/com/kafkaToSparkToCass/Main.scala
+
+https://github.com/aokolnychyi/spark-structured-streaming-kafka-example/blob/master/src/main/scala/com/aokolnychyi/spark/streaming/structured/example/SparkStructuredStreamingExample.scala
