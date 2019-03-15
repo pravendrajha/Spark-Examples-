@@ -1,0 +1,29 @@
+SparkSession.builder().
+  config("hive.exec.dynamic.partition", "true").
+  config("hive.exec.dynamic.partition.mode", "nonstrict").
+  config("hive.execution.engine","spark").
+  config("hive.exec.max.dynamic.partitions","400").
+  config("hive.exec.max.dynamic.partitions.pernode","400").
+  config("hive.enforce.bucketing","true").
+  config("optimize.sort.dynamic.partitionining","true").
+  config("hive.vectorized.execution.enabled","true").
+  config("hive.enforce.sorting","true").
+  enableHiveSupport().getOrCreate()
+
+
+
+spark.sql(s"insert into hiveTableName partition (partition_column) select * from  myParquetFile")
+
+
+partition + Bucking :-
+
+dataframe
+  .withColumn("bucket", pmod(hash($"bucketColumn"), lit(numBuckets)))
+  .repartition(numBuckets, $"partitionColumn", $"bucket")
+  .write
+  .format(fmt)
+  .partitionBy("partitionColumn")
+  .bucketBy(numBuckets, "bucketColumn")
+  .sortBy("bucketColumn")
+  .option("path", "/path/to/your/table")
+  .saveAsTable("table_name")
