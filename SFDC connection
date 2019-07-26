@@ -1,0 +1,8 @@
+val soql = "select t1 from test where t1 >= '123' and t1 <= '444' and type='EMP'"
+    
+val sfDF = spark.read.format("com.springml.spark.salesforce")
+.option("login","https://csales-xxx.my.salesforce.com")
+.option("username", "user").
+option("password", "passwpordTOKEN").
+option("soql", soql)
+.option("version", "45.0").load()
