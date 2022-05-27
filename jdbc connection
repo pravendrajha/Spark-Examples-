@@ -12,7 +12,7 @@ object SimpleApp {
 
     val query = "(select * from dual ) emp"
 
-    val empDF = spark.read.format("jdbc").option("url", "jdbc:oracle:thin:apps/apps@//hostname:1541/sid").option("dbtable", query).option("user", "apps").option("password", "P0t3ntial").option("driver", "oracle.jdbc.driver.OracleDriver").load()
+    val empDF = spark.read.format("jdbc").option("url", "jdbc:oracle:thin:apps/apps@//hostname:1541/sid").option("dbtable", query).option("user", "apps").option("password", "apps").option("driver", "oracle.jdbc.driver.OracleDriver").load()
 
     empDF.printSchema()
 
